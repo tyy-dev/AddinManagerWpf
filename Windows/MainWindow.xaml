@@ -1,26 +1,49 @@
-﻿<Window x:Class="AddinManagerWpf.Windows.MainWindow"
-        x:Name="MainWind"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:AddinManagerWpf"
-        mc:Ignorable="d"
-        xmlns:vm="clr-namespace:AddinManagerWpf.ViewModels"
-        Title="Addin Manager Window" Height="450" Width="800"
-        d:DataContext="{d:DesignInstance vm:MainViewModel}">
-    
+﻿<Window
+    x:Class="AddinManagerWpf.Windows.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:AddinManagerWpf"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:AddinManagerWpf.ViewModels"
+    x:Name="MainWind"
+    Title="Addin Manager Window"
+    Width="800"
+    Height="450"
+    d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    mc:Ignorable="d">
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
-
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="5">
-            <Button x:Name="RefreshAddinsButton" Content="Refresh Addins" Margin="5" Command="{Binding RefreshAddInsCommand}"/>
+        <StackPanel Margin="5" Orientation="Horizontal">
+            <Button
+                x:Name="RefreshAddinsButton"
+                Margin="5"
+                Command="{Binding RefreshAddInsCommand}"
+                Content="Refresh Addins" />
+            <Grid
+                Width="1"
+                Height="20"
+                Margin="5,0,5,0"
+                VerticalAlignment="Center"
+                Background="DodgerBlue" />
+            <Button
+                x:Name="OpenAddinFolderButton"
+                Margin="5"
+                Command="{Binding OpenBasePathFolderCommand}"
+                CommandParameter="{Binding OpenBasePathSelectedPath}"
+                Content="Open Addin Folder" />
+            <ComboBox
+                x:Name="AddinFolderType"
+                Width="150"
+                Margin="5"
+                ItemsSource="{Binding BasePaths}"
+                SelectedItem="{Binding OpenBasePathSelectedPath, Mode=TwoWay}" />
         </StackPanel>
         <TabControl Grid.Row="1" ItemsSource="{Binding Versions}">
             <TabControl.ItemTemplate>
@@ -28,35 +51,52 @@
                     <TextBlock Text="{Binding Version}" />
                 </DataTemplate>
             </TabControl.ItemTemplate>
-
             <TabControl.ContentTemplate>
                 <DataTemplate>
-                    <DataGrid IsReadOnly="True" ItemsSource="{Binding AddIns}" AutoGenerateColumns="False" CanUserAddRows="False" Margin="5">
+                    <DataGrid
+                        Margin="5"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding AddIns}"
+                        SelectionMode="Single">
                         <DataGrid.RowStyle>
                             <Style TargetType="DataGridRow">
                                 <Setter Property="ContextMenu">
                                     <Setter.Value>
                                         <ContextMenu>
-                                            <MenuItem Header="Open Folder"
-                                                Command="{Binding DataContext.OpenAddInFolderCommand, Source={x:Reference MainWind}}"                                                
-                                                      CommandParameter="{Binding}" />
-                                            <MenuItem Header="Switch Element's Assembly Path"
-        Command="{Binding DataContext.SwitchAssemblyCommand, Source={x:Reference MainWind}}"                                                
-              CommandParameter="{Binding}" />
+                                            <MenuItem
+                                                Command="{Binding DataContext.OpenAddInCommand, Source={x:Reference MainWind}}"
+                                                CommandParameter="{Binding}"
+                                                Header="Open File" />
+                                            <MenuItem
+                                                Command="{Binding DataContext.OpenAddInFolderCommand, Source={x:Reference MainWind}}"
+                                                CommandParameter="{Binding}"
+                                                Header="Open Folder" />
+                                            <MenuItem
+                                                Command="{Binding DataContext.SwitchAssemblyCommand, Source={x:Reference MainWind}}"
+                                                CommandParameter="{Binding}"
+                                                Header="Switch Element's Assembly Path" />
                                         </ContextMenu>
                                     </Setter.Value>
                                 </Setter>
                             </Style>
                         </DataGrid.RowStyle>
-                        
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="Auto" CanUserSort="False"/>
-                            <DataGridTextColumn Header="Full Name" Binding="{Binding FullName}" Width="*" CanUserSort="False"/>
+                            <DataGridTextColumn
+                                Width="Auto"
+                                Binding="{Binding Name}"
+                                CanUserSort="False"
+                                Header="Name" />
+                            <DataGridTextColumn
+                                Width="*"
+                                Binding="{Binding FullName}"
+                                CanUserSort="False"
+                                Header="Full Name" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
-        
     </Grid>
 </Window>

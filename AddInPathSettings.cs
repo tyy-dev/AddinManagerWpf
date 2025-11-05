@@ -1,5 +1,4 @@
 ﻿using Autodesk.RevitAddIns;
-using System;
 using System.IO;
 using System.Xml.Linq;
 
@@ -26,8 +25,7 @@ namespace AddinManagerWpf
             if (addInElement == null)
                 throw new InvalidOperationException($"AddIn with FullClassName '{fullClassName}' not found in {addInPath}.");
 
-            XElement? assemblyElement = addInElement.Element("Assembly");
-            assemblyElement?.Value = newAssemblyPath;
+            addInElement.Element("Assembly")?.Value = newAssemblyPath;
 
             doc.Save(addInPath);
         }

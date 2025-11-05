@@ -2,7 +2,6 @@
 using Autodesk.RevitAddIns;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
@@ -26,7 +25,7 @@ namespace AddinManagerWpf.ViewModels
         {
             if (this.SelectedAddinElement == null) return;
 
-            string? newAssemblyPath = ChooseAssemblyFile(Path.GetDirectoryName(addIn.FullName));
+            string? newAssemblyPath = this.ChooseAssemblyFile();
             if (newAssemblyPath == null) return;
 
             try
@@ -35,23 +34,17 @@ namespace AddinManagerWpf.ViewModels
 
                 AddInFileManager.UpdateAssemblyPath(addIn, fullClassName, newAssemblyPath);
                 AddInsManager.RefreshAvailableVersions();
-                MessageBox.Show($"AddIn's {fullClassName} assembly path successfully.");
+                MessageBox.Show($"AddIn's {fullClassName} assembly path successfully.", "sucess", MessageBoxButton.OK);
+                window.Close();
+
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to update AddIn: {ex.Message}");
+                MessageBox.Show($"Failed to update AddIn: {ex.Message}", "error", MessageBoxButton.OK);
             }
         }
 
-        private static string? ChooseAssemblyFile(string? initialDirectory)
-        {
-            OpenFileDialog dialog = new()
-            {
-                Filter = "DLL files (*.dll)|*.dll",
-                InitialDirectory = initialDirectory
-            };
-            return dialog.ShowDialog() == true ? dialog.FileName : null;
-        }
+        private string? ChooseAssemblyFile() => IOUtils.ChooseFile("DLL files (*.dll)|*.dll", Path.GetDirectoryName(addIn.FullName));
 
         private bool CanExecute() => this.SelectedAddinElement != null;
 
