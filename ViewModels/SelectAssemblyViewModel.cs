@@ -1,4 +1,4 @@
-﻿using AddinManagerWpf.Entities;
+using AddinManagerWpf.Entities;
 using Autodesk.RevitAddIns;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -20,6 +20,11 @@ namespace AddinManagerWpf.ViewModels
         [NotifyCanExecuteChangedFor(nameof(OkCommand))]
         private AddInElement? _selectedAddinElement;
 
+        private string? ChooseAssemblyFile() => IOUtils.ChooseFile(initialDirectory: Path.GetDirectoryName(addIn.FullName));
+
+        private bool CanExecute() => this.SelectedAddinElement != null;
+
+        #region Commands
         [RelayCommand(CanExecute = nameof(CanExecute))]
         public void Ok(Window window)
         {
@@ -28,10 +33,9 @@ namespace AddinManagerWpf.ViewModels
             string? newAssemblyPath = this.ChooseAssemblyFile();
             if (newAssemblyPath == null) return;
 
+            string fullClassName = this.SelectedAddinElement.FullClassName;
             try
             {
-                string fullClassName = this.SelectedAddinElement.FullClassName;
-
                 AddInFileManager.UpdateAssemblyPath(addIn, fullClassName, newAssemblyPath);
                 AddInsManager.RefreshAvailableVersions();
                 MessageBox.Show($"AddIn's {fullClassName} assembly path successfully.", "sucess", MessageBoxButton.OK);
@@ -40,15 +44,11 @@ namespace AddinManagerWpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to update AddIn: {ex.Message}", "error", MessageBoxButton.OK);
+                MessageBox.Show($"Failed to update AddIn {this.SelectedAddinElement.FullClassName}: {ex.Message}", "error", MessageBoxButton.OK);
             }
         }
-
-        private string? ChooseAssemblyFile() => IOUtils.ChooseFile("DLL files (*.dll)|*.dll", Path.GetDirectoryName(addIn.FullName));
-
-        private bool CanExecute() => this.SelectedAddinElement != null;
-
         [RelayCommand]
         public static void Cancel(Window window) => window.Close();
+        #endregion
     }
 }
