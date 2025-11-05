@@ -44,7 +44,7 @@ namespace AddinManagerWpf.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to update AddIn {this.SelectedAddinElement.FullClassName}: {ex.Message}", "error", MessageBoxButton.OK);
+                MessageBox.Show($"Failed to update AddIn {fullClassName}: {ex.Message}", "error", MessageBoxButton.OK);
             }
         }
         [RelayCommand]
